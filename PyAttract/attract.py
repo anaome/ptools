@@ -231,7 +231,7 @@ print "rstk = ",rstk
 def check_ffversion(reduced):
     header = open(reduced, 'r').readline()
     if not 'HEADER' in header:
-         sys.stderr.write("ERROR: reduced PDB file must contain a HEADER line specifying the chosen forcefield (scorpion, attract1, attract2)\n")
+         sys.stderr.write("ERROR: reduced PDB file must contain a HEADER line specifying the chosen forcefield (scorpion, attract1, attract2, imc)\n")
          sys.exit(1)
 
     #read cg format:
@@ -260,7 +260,11 @@ allff_specs = {
                           'ff_class': AttractForceField2,
                           'minimizer_class': Lbfgs
                           },
-
+                          
+             'IMC': {'ff_file': 'imc.par', 
+                          'ff_class': ImcForceField,
+                          'minimizer_class': Lbfgs
+                          },
            }
 
 
