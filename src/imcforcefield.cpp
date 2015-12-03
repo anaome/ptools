@@ -75,13 +75,13 @@ void ImcForceField::InitParams(const std::string & paramsFileName )
 
         std::string line;
         std::getline(aminon, line);
-        cout << line << endl;
+        //cout << line << endl;
 
         linenb++;
 
         if (line[0] == '#')
         {
-            cout << "skipping line " << linenb << endl;
+        //    cout << "skipping line " << linenb << endl;
             continue;
         }
 
@@ -90,13 +90,15 @@ void ImcForceField::InitParams(const std::string & paramsFileName )
 
         Parameters p;
         std::string type1, type2;
-        dbl Bi,xi,Ci;
+        dbl Ai,Bi,xi,Ci;
 
         std::istringstream linestream(line);
 
         linestream >> p.id1 >> p.id2 >> type1 >> type2;
-        linestream >> p.Q >> p.A >> p.N;
+        linestream >> p.Q >> Ai >> p.N;
 
+	p.A = Ai/4.184/1e12; // from kJ.mol^-1.nm^12 to kcal.mol^-1.A^12
+	
         p.id1--;
         p.id2--; //convert ids to C-style
 
@@ -111,8 +113,8 @@ void ImcForceField::InitParams(const std::string & paramsFileName )
         {
 
             linestream >> Bi >> xi >> Ci; // ! parameters are in kJ and nm units !
-            p.B.push_back(Bi/4.184/1e12); // from kJ.mol^-1.nm^12 to kcal.mol^-1.A^12
-            p.X.push_back(xi/10.0); // from nm to A
+            p.B.push_back(Bi/4.184); // from kJ.mol^-1 to kcal.mol^-1
+            p.X.push_back(xi*10.0); // from nm to A
             p.C.push_back(Ci/100.0); // from nm^-2 to A^-2
 
 //          cout << Bi << " " << xi << " " << Ci << " " ;
@@ -146,6 +148,7 @@ dbl ImcForceField::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, 
 
     Coord3D a, b;
 
+    //cout << pairlist.Size() << " pairs"<< endl;
     for (uint iter=0; iter<pairlist.Size(); iter++) // loop over all pairs
     {
 
@@ -155,11 +158,11 @@ dbl ImcForceField::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, 
         uint rAtomCat = rec.getAtomTypeNumber(ir);
         uint lAtomCat = lig.getAtomTypeNumber(jl);
 
-		uint Qij = m_parameters[rAtomCat][lAtomCat].Q; // return charge product for pairtype 
-		dbl Aij = m_parameters[rAtomCat][lAtomCat].A; // return 1/r^12 parameter
-		std::vector<dbl> Bij =  m_parameters[rAtomCat][lAtomCat].B; // return Gaussian parameters
-		std::vector<dbl> Xij =  m_parameters[rAtomCat][lAtomCat].X;
-		std::vector<dbl> Cij =  m_parameters[rAtomCat][lAtomCat].C;	
+	uint Qij = m_parameters[rAtomCat][lAtomCat].Q; // return charge product for pairtype 
+	dbl Aij = m_parameters[rAtomCat][lAtomCat].A; // return 1/r^12 parameter
+	std::vector<dbl> Bij =  m_parameters[rAtomCat][lAtomCat].B; // return Gaussian parameters
+	std::vector<dbl> Xij =  m_parameters[rAtomCat][lAtomCat].X;
+	std::vector<dbl> Cij =  m_parameters[rAtomCat][lAtomCat].C;	
 		
 		
         lig.unsafeGetCoords(jl,a);
@@ -175,54 +178,52 @@ dbl ImcForceField::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, 
         dbl rr1 = 1.0/r1;
         dbl rr2 = rr1*rr1; // 1/r^2       
         dbl rr26 = rr2*rr2*rr2*rr2*rr2*rr2; // 1/r^12
-		dbl repwall = Aij*rr26; // repulsive wall energy
-		dbl G[5]; // declare array of 5 Gaussian energies
-		dbl vlj=0.0; // declare and initialize the vdW energy for current pair
-		dbl fb=0.0; // declare and initialize the minus derivative of the energy
-		for ( uint i=0; i<=Bij.size(); i++) // loop over Gaussians
-		{
-			dbl gdist = r1-Xij[i];
-			G[i] = Bij[i]*exp(-Cij[i]*(gdist*gdist)); // calculate energy of Gaussian i
-			vlj += G[i];
-			fb += 2.0*Cij[i]*Cij[i]*gdist*G[i]; // -dG/dr=2BijCij(rij-Xij)G
-		}
+	dbl repwall = Aij*rr26; // repulsive wall energy
+	dbl G[5]; // declare array of 5 Gaussian energies
+	dbl vlj=0.0; // declare and initialize the vdW energy for current pair
+	dbl fb=0.0; // declare and initialize the minus derivative of the energy
+	for ( uint i=0; i<=Bij.size(); i++) // loop over Gaussians
+	{
+		dbl gdist = r1-Xij[i];
+		G[i] = Bij[i]*exp(-Cij[i]*(gdist*gdist)); // calculate energy of Gaussian i
+		vlj += G[i];
+		fb += 2.0*Cij[i]*Cij[i]*gdist*G[i]; // -dG/dr=2BijCij(rij-Xij)G
+	}
+	
+	        //cout << "id1:"<< rAtomCat <<", id2:"<< lAtomCat << ", d:" << r1 << ", repwall: " << repwall << ", vlj: "<<  vlj << endl;
+	        
+	vlj += repwall;
+	sumLJ += vlj;
+	
+	fb += 12.0*repwall*rr1;
 		
-		vlj += repwall;
-		sumLJ += vlj;
+	dx = rr1*dx; // distance vector normalized to unity (dx/Norm(dx)) 
 		
-		fb += 12.0*repwall*rr1;
-		
-		dx = rr1*dx; // distance vector normalized to unity (dx/Norm(dx)) 
-		
-		Coord3D fdb = fb*dx ;
+	Coord3D fdb = fb*dx ;
 
         //assign force to the atoms:
         forcelig[jl] -= fdb ;
         forcerec[ir] += fdb ;
 
 		
-		// electrostatic part
-		if (fabs(Qij) > 0.0)
-		{
-			dbl et = Qij*(332.053986/80.0)*rr1;
-			sumElectrostatic += et;
-			
-			Coord3D fdb = (332.053986/80.0)*rr2*dx;
-            forcelig[jl] -= fdb ;
-            forcerec[ir] += fdb ;
-
-			
-		}
+	// electrostatic part
+	if (fabs(Qij) > 0.0)
+	{
+		dbl et = Qij*(332.053986/80.0)*rr1;
+		sumElectrostatic += et;
 		
-		m_vdw = sumLJ;
-    	m_elec = sumElectrostatic;
-
-    	return sumLJ + sumElectrostatic;
-		
+		Coord3D fdb = (332.053986/80.0)*rr2*dx;
+        	forcelig[jl] -= fdb ;
+        	forcerec[ir] += fdb ;
 	}
-
+		
+}		
+m_vdw = sumLJ;
+m_elec = sumElectrostatic;
+cout << "Energy: " << sumLJ <<" kCal.mol^-1" endl;
+return sumLJ + sumElectrostatic;
+		
 }
-
 
 
 } //namespace PTools
