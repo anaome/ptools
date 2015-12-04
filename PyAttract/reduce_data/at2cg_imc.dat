@@ -385,7 +385,7 @@ TYR       CG        12        29        Y
 TYR       CD1       12        29        Y
 TYR       HD1       1         29        Y                    
 TYR       CD2       12        29        Y
-TYR       HD1       1         29        Y                     
+TYR       HD2       1         29        Y                     
 TYR       CE1       12        29        Y
 TYR       HE1       1         29        Y                     
 TYR       CE2       12        29        Y
@@ -402,7 +402,7 @@ YP1       CG        12        30        YP
 YP1       CD1       12        30        YP
 YP1       HD1       1         30        YP                    
 YP1       CD2       12        30        YP
-YP1       HD1       1         30        YP                     
+YP1       HD2       1         30        YP                     
 YP1       CE1       12        30        YP
 YP1       HE1       1         30        YP                     
 YP1       CE2       12        30        YP
@@ -423,7 +423,7 @@ YP2       CG        12        31        YP2
 YP2       CD1       12        31        YP2
 YP2       HD1       1         31        YP2                   
 YP2       CD2       12        31        YP2
-YP2       HD1       1         31        YP2                    
+YP2       HD2       1         31        YP2                    
 YP2       CE1       12        31        YP2
 YP2       HE1       1         31        YP2                    
 YP2       CE2       12        31        YP2
