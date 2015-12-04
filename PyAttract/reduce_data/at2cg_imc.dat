@@ -297,7 +297,7 @@ PHE       HD2       1         21        F
 PHE       CE1       12        21        F
 PHE       HE1       1         21        F
 PHE       CE2       12        21        F
-PHE       HE1       1         21        F
+PHE       HE2       1         21        F
 PHE       CZ        12        21        F
 PHE       HZ        1         21        F
 #=== proline
@@ -457,7 +457,7 @@ TRP       HZ2       1         32        W
 #=== valine
 VAL       CA        1         33        V       
 VAL       CB        12        33        V
-VAL       HB        12        33        V              
+VAL       HB        1        33        V              
 VAL       CG1       12        33        V
 VAL       HG11      1         33        V       
 VAL       HG12      1         33        V       
