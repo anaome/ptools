@@ -212,7 +212,7 @@ dbl ImcForceField::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, 
 		dbl et = Qij*(332.053986/80.0)*rr1;
 		sumElectrostatic += et;
 		
-		Coord3D fdb = (332.053986/80.0)*rr2*dx;
+		Coord3D fdb = et*rr1*dx;
 	               
                 forcelig[jl] -= fdb ;
                 forcerec[ir] += fdb ;			
