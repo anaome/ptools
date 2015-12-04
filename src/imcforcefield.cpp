@@ -96,7 +96,7 @@ void ImcForceField::InitParams(const std::string & paramsFileName )
 
         linestream >> p.id1 >> p.id2 >> type1 >> type2;
         linestream >> p.Q >> Ai >> p.N;
-	p.A = Ai/4.184/1e12; // from kJ.mol^-1.nm^12 to kcal.mol^-1.A^12
+	p.A = Ai*1e12/4.184; // from kJ.mol^-1.nm^12 to kcal.mol^-1.A^12
 
         p.id1--;
         p.id2--; //convert ids to C-style
