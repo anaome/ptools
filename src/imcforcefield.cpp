@@ -182,7 +182,7 @@ dbl ImcForceField::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, 
 	dbl G[5]; // declare array of 5 Gaussian energies
 	dbl vlj=0.0; // declare and initialize the vdW energy for current pair
 	dbl fb=0.0; // declare and initialize the minus derivative of the energy
-	for ( uint i=0; i<=Bij.size(); i++) // loop over Gaussians
+	for ( uint i=0; i<Bij.size(); i++) // loop over Gaussians
 	{
 		dbl gdist = r1-Xij[i];
 		G[i] = Bij[i]*exp(-Cij[i]*(gdist*gdist)); // calculate energy of Gaussian i
