@@ -422,9 +422,9 @@ for trans in translations:
 
         #calculates true energy, and rmsd if possible
         #with the new ligand position
-        forcefield=ff_specs['ff_class'](ff_specs['ff_file'],  surreal(500))
+        forcefield=ff_specs['ff_class'](ff_specs['ff_file'],  surreal(15))
         print "%4s %6s %6s %13s %13s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref")
-        pl = AttractPairList(rec, ligand,surreal(500))
+        pl = AttractPairList(rec, ligand,surreal(15))
         print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.nonbon8(rec,ligand,pl), str(rms))
         output.PrintMatrix()
 
