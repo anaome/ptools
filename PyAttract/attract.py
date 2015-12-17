@@ -263,7 +263,7 @@ allff_specs = {
                           
              'IMC': {'ff_file': 'imc.par', 
                           'ff_class': ImcForceField,
-                          'minimizer_class': Lbfgs
+                          'minimizer_class': ImcLbfgs
                           },
            }
 
